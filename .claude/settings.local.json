@@ -1,0 +1,18 @@
+{
+  "permissions": {
+    "allow": [
+      "Bash(git:*)",
+      "Bash(npx:*)",
+      "Bash(cp -r ecom-visual-studio/* .)",
+      "Bash(cp -r ecom-visual-studio/.[!.]* .)",
+      "Bash(rm -rf ecom-visual-studio)",
+      "Bash(mv ecom-visual-studio/* .)",
+      "Bash(mv ecom-visual-studio/.[!.]* .)",
+      "Bash(npm install:*)",
+      "Bash(rm -rf ecom-visual-studio/node_modules)",
+      "Bash(pnpm install:*)",
+      "Bash(pnpm add:*)",
+      "Bash(pnpm dev:*)"
+    ]
+  }
+}

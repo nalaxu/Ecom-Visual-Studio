@@ -1,0 +1,120 @@
+// This is your Prisma schema file,
+// learn more about it in the docs: https://pris.ly/d/prisma-schema
+
+generator client {
+  provider = "prisma-client-js"
+}
+
+// NOTE: Since SQLite does not support enums, we'll use Strings for enums in models,
+// and enforce checks at the application level (in TS types/Zod).
+// Also SQLite doesn't have a native JSON type, so fields like metadata
+// will be stored as strings and parsed in the app.
+
+datasource db {
+  provider = "sqlite"
+}
+
+model Task {
+  id            String    @id @default(cuid())
+  name          String
+  category      String    // e.g., 'rug', 'desk_mat', etc.
+  platform      String    // e.g., 'amazon', 'temu', 'mercado_libre', 'shopify'
+  outputType    String    // e.g., 'white_bg', 'dimension', 'scene'
+  status        String    // e.g., 'pending', 'processing', 'completed', 'failed'
+
+  templateId    String?   // References PromptTemplate
+  template      PromptTemplate? @relation(fields: [templateId], references: [id])
+
+  modelConfigId String?   // References ModelConfig
+  modelConfig   ModelConfig?    @relation(fields: [modelConfigId], references: [id])
+
+  metadata      String?   // JSON string containing arbitrary data
+  errorMessage  String?   // Populated if status is 'failed'
+
+  createdAt     DateTime  @default(now())
+  updatedAt     DateTime  @updatedAt
+  deletedAt     DateTime? // For soft-delete
+
+  images        TaskImage[]
+  copyResults   CopyResult[]
+}
+
+model TaskImage {
+  id            String   @id @default(cuid())
+  taskId        String
+  task          Task     @relation(fields: [taskId], references: [id], onDelete: Cascade)
+
+  role          String   // e.g., 'input', 'preprocessed', 'output'
+  imageType     String   // e.g., 'white_bg', 'dimension', 'scene'
+
+  storagePath   String
+  fileName      String
+  mimeType      String
+  fileSize      Int
+  dimensions    String?  // JSON string e.g., '{"width": 800, "height": 600}'
+
+  // Quality fields
+  qualityScore  Int?
+  qualityStatus String?  // e.g., 'pass', 'warn', 'fail'
+  qualityDetail String?  // Detailed JSON string
+
+  sortOrder     Int      @default(0)
+
+  createdAt     DateTime @default(now())
+  updatedAt     DateTime @updatedAt
+}
+
+model CopyResult {
+  id           String   @id @default(cuid())
+  taskId       String
+  task         Task     @relation(fields: [taskId], references: [id], onDelete: Cascade)
+
+  platform     String
+  title        String
+  bulletPoints String   // JSON string array
+  description  String
+  keywords     String?  // Comma separated or JSON string
+  language     String   @default("en")
+
+  createdAt    DateTime @default(now())
+  updatedAt    DateTime @updatedAt
+}
+
+model ModelConfig {
+  id           String   @id @default(cuid())
+  name         String
+  provider     String   // e.g., 'openai', 'anthropic', 'gemini'
+  baseUrl      String?
+  apiKey       String?
+  modelName    String
+
+  capabilities String   // JSON array of supported capabilities
+
+  timeout      Int      @default(30000)
+  maxRetries   Int      @default(3)
+  isEnabled    Boolean  @default(true)
+
+  createdAt    DateTime @default(now())
+  updatedAt    DateTime @updatedAt
+
+  tasks        Task[]
+}
+
+model PromptTemplate {
+  id           String   @id @default(cuid())
+  name         String
+  category     String   // e.g., 'rug', 'desk_mat', etc.
+  outputType   String   // e.g., 'white_bg', 'dimension', 'scene'
+  platform     String?  // optional
+
+  promptText   String
+  variables    String   // JSON array of required variables
+
+  isBuiltin    Boolean  @default(false)
+  isFavorite   Boolean  @default(false)
+
+  createdAt    DateTime @default(now())
+  updatedAt    DateTime @updatedAt
+
+  tasks        Task[]
+}

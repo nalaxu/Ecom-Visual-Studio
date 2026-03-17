@@ -1,0 +1,6 @@
+node_modules
+.env.local\nuploads/\nprisma/dev.db\nprisma/dev.db-journal
+
+/src/generated/prisma
+.env
+.next
