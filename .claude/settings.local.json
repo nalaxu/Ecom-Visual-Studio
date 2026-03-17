@@ -12,7 +12,9 @@
       "Bash(rm -rf ecom-visual-studio/node_modules)",
       "Bash(pnpm install:*)",
       "Bash(pnpm add:*)",
-      "Bash(pnpm dev:*)"
+      "Bash(pnpm dev:*)",
+      "Bash(pnpm run:*)",
+      "Bash(echo:*)"
     ]
   }
 }

@@ -1,36 +1,87 @@
-This is a [Next.js](https://nextjs.org) project bootstrapped with [`create-next-app`](https://nextjs.org/docs/app/api-reference/cli/create-next-app).
+# Ecom Visual Studio (电商商品图工坊)
+
+This is a [Next.js](https://nextjs.org) project designed as a web application for cross-border e-commerce product image generation and management.
+
+## Current Progress
+
+- **Step 1: Project Initialization** - ✅ Completed
+  - Initialized Next.js with TypeScript, Tailwind CSS, ESLint, App Router, and React Compiler.
+  - Added tooling: Prettier, `next-themes`, `zod`, `lucide-react`.
+  - Configured project environment (`.prettierrc`, `.eslintrc.json`, `.gitignore`, `.env.local`).
+- **Step 2: Prisma + Database Schema** - ✅ Completed
+  - Setup Prisma with SQLite locally.
+  - Implemented the database schema representing product requirements (`Task`, `TaskImage`, `CopyResult`, `ModelConfig`, `PromptTemplate`).
+  - Added the dev-safe Prisma client singleton (`src/lib/db.ts`).
+  - Synced database tables (`pnpm db:push`).
+  - Created initial database seeding script (`prisma/seed.ts`).
+
+---
+
+## Full Implementation Plan
+
+Based on the original structural design, here is the execution plan:
+
+### Step 1: Project Initialization (Completed)
+- Initialize Next.js in the existing directory and add tooling.
+- Add prettier, eslint-config-prettier, tsx, next-themes, zod, lucide-react.
+- Create project config files and verify development server starts.
+
+### Step 2: Prisma + Database Schema (Completed)
+- Add prisma and @prisma/client, initialize with `sqlite`.
+- Create `prisma/schema.prisma` mapping out tasks, images, generated copies, and system settings.
+- Create `src/lib/db.ts` to prevent hot-reload connection leaks.
+- Create `prisma/seed.ts` and set up standard database npm scripts.
+
+### Step 3: Type Definitions
+- Create `src/types/` with strict domain types (TypeScript) shared across client and server:
+  - `platform.ts`, `model.ts`, `template.ts`, `storage.ts`, `task.ts`
+
+### Step 4: Configuration + Utilities
+- Create `src/lib/config.ts` for typed app configuration driven by `process.env`.
+- Create `src/lib/utils.ts` for standard shadcn/tailwind merging and formatting.
+
+### Step 5: Storage Abstraction
+- Create `src/lib/storage/` establishing the `IStorageProvider` interface.
+- Implement `local.ts` for immediate file system uploads and provide a stubbed `s3.ts`.
+
+### Step 6: shadcn/ui + UI Shell
+- Initialize `shadcn/ui` and add basic UI components (button, card, input, sidebar, dialog, etc.).
+- Build nested dashboard layouts (`src/app/(dashboard)/layout.tsx`) utilizing a sidebar and header.
+- Flesh out standard scaffolding pages for the application route structure.
+
+### Step 7: Three-Layer Architecture Foundation
+- **Layer 1:** Model Adapter Layer (`src/lib/models`) to interface with OpenAI, Anthropic, Gemini.
+- **Layer 2:** Capability Abstraction Layer (`src/lib/capabilities`) for generic text-to-image and multimodal tasks.
+- **Layer 3:** Business Orchestration Layer (`src/lib/orchestration`) defining the sequence pipeline.
+
+### Step 8: API Route Handlers
+- Set up scalable Next.js App Router API endpoints supporting Prisma validation.
+- Routes: Healthchecks, task dispatching, model configs, templates, and storage uploading.
+
+### Step 9: Seed Data + Final Polish
+- Complete full default database insertions via `prisma/seed.ts` for standard item templates (Rugs, Desk mats).
+- Finalize UI mapping and update primary documentation.
+
+---
 
 ## Getting Started
 
-First, run the development server:
+First, ensure dependencies are installed via pnpm:
 
 ```bash
-npm run dev
-# or
-yarn dev
-# or
-pnpm dev
-# or
-bun dev
+pnpm install
 ```
 
-Open [http://localhost:3000](http://localhost:3000) with your browser to see the result.
+Generate the Prisma client:
 
-You can start editing the page by modifying `app/page.tsx`. The page auto-updates as you edit the file.
+```bash
+pnpm prisma generate
+```
 
-This project uses [`next/font`](https://nextjs.org/docs/app/building-your-application/optimizing/fonts) to automatically optimize and load [Geist](https://vercel.com/font), a new font family for Vercel.
+Run the development server:
 
-## Learn More
+```bash
+pnpm dev
+```
 
-To learn more about Next.js, take a look at the following resources:
-
-- [Next.js Documentation](https://nextjs.org/docs) - learn about Next.js features and API.
-- [Learn Next.js](https://nextjs.org/learn) - an interactive Next.js tutorial.
-
-You can check out [the Next.js GitHub repository](https://github.com/vercel/next.js) - your feedback and contributions are welcome!
-
-## Deploy on Vercel
-
-The easiest way to deploy your Next.js app is to use the [Vercel Platform](https://vercel.com/new?utm_medium=default-template&filter=next.js&utm_source=create-next-app&utm_campaign=create-next-app-readme) from the creators of Next.js.
-
-Check out our [Next.js deployment documentation](https://nextjs.org/docs/app/building-your-application/deploying) for more details.
+Open [http://localhost:3000](http://localhost:3000) with your browser to see the application.
